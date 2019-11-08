@@ -76,6 +76,7 @@ public class MainActivity extends BaseActivity implements
                 mCalendarView.showYearSelectLayout(mYear);
                 mTextLunar.setVisibility(View.GONE);
                 mTextYear.setVisibility(View.GONE);
+                mTextSchedule.setVisibility(View.GONE);
                 mTextMonthDay.setText(String.valueOf(mYear));
             }
         });
@@ -151,6 +152,7 @@ public class MainActivity extends BaseActivity implements
     public void onCalendarSelect(Calendar calendar, boolean isClick) {
         mTextLunar.setVisibility(View.VISIBLE);
         mTextYear.setVisibility(View.VISIBLE);
+        mTextSchedule.setVisibility(View.VISIBLE);
         mTextMonthDay.setText(calendar.getMonth() + "月" + calendar.getDay() + "日");
         mTextYear.setText(String.valueOf(calendar.getYear()));
         mTextLunar.setText(calendar.getLunar());
@@ -169,6 +171,7 @@ public class MainActivity extends BaseActivity implements
         Calendar calendar = mCalendarView.getSelectedCalendar();
         mTextLunar.setVisibility(View.VISIBLE);
         mTextYear.setVisibility(View.VISIBLE);
+        mTextSchedule.setVisibility(View.VISIBLE);
         mTextMonthDay.setText(calendar.getMonth() + "月" + calendar.getDay() + "日");
         mTextYear.setText(String.valueOf(calendar.getYear()));
         mTextLunar.setText(calendar.getLunar());
