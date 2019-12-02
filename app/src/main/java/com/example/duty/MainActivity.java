@@ -25,11 +25,13 @@ public class MainActivity extends BaseActivity implements
         CalendarView.OnMonthChangeListener,
         CalendarView.OnYearChangeListener{
 
-    final String FLAG_DATE = "2019-11-04";
+    final String FLAG_DATE = "2019-12-02";
 
-    final String duties[] = {"值班", "半休", "正修", "白班"};
+    final String Test_DATE = "2020-06-31";  // 实际上是2020-05-31 ,因为Java month要+1
 
-    final int colors[] = {0xFF40db25, 0xFFe69138, 0xFFaacc44, 0xFF4a4bd2};
+    final String duties[] = {"值班", "夜修", "正修", "正修", "白班", "门诊"};
+
+    final int colors[] = {0xFF40db25, 0xFFe69138, 0xFFaacc44, 0xFFaacc44, 0xFFcda1af, 0xFF22acaf};
 
     TextView mTextMonthDay;
 
@@ -40,6 +42,8 @@ public class MainActivity extends BaseActivity implements
     TextView mTextCurrentDay;
 
     TextView mTextLunar;
+
+    TextView mTextTest;
 
     CalendarView mCalendarView;
 
@@ -66,6 +70,7 @@ public class MainActivity extends BaseActivity implements
         mCalendarView = findViewById(R.id.calendarView);
         mTextCurrentDay = findViewById(R.id.tv_current_day);
         mTextSchedule = findViewById(R.id.tv_schedule);
+        mTextTest = findViewById(R.id.tv_test);
         mTextMonthDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,7 +89,7 @@ public class MainActivity extends BaseActivity implements
         findViewById(R.id.fl_current).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Calendar calendar = new Calendar();
+                // Calendar calendar = new Calendar();
 
                 Date date = new Date();
                 java.util.Calendar originCalendar = java.util.Calendar.getInstance();
@@ -104,6 +109,11 @@ public class MainActivity extends BaseActivity implements
         mTextLunar.setText("今日");
         mTextCurrentDay.setText(String.valueOf(mCalendarView.getCurDay()));
 
+        // Test day
+        Calendar calendar = mCalendarView.getSelectedCalendar();
+        mTextTest.setText(String.valueOf(getTestDateCount(calendar)));
+        rePlan(calendar);
+
         // Listeners
         mCalendarView.setOnCalendarSelectListener(this);
         mCalendarView.setOnMonthChangeListener(this);
@@ -122,7 +132,7 @@ public class MainActivity extends BaseActivity implements
             int year = calendar.get(java.util.Calendar.YEAR);
             int month = calendar.get(java.util.Calendar.MONTH);
             int day = calendar.get(java.util.Calendar.DAY_OF_MONTH);
-            int key = n % 4;
+            int key = n % 6;
 
             Calendar cal = getSchemeCalendar(year, month + 1, day, colors[key], duties[key]);
             map.put(cal.toString(), cal);
@@ -136,27 +146,13 @@ public class MainActivity extends BaseActivity implements
 
     protected Date getFlagDate()
     {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Date flagDate = null;
-        try {
-            flagDate = formatter.parse(FLAG_DATE);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        return flagDate;
+        return parseDate(FLAG_DATE);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
     public void onCalendarSelect(Calendar calendar, boolean isClick) {
-        mTextLunar.setVisibility(View.VISIBLE);
-        mTextYear.setVisibility(View.VISIBLE);
-        mTextSchedule.setVisibility(View.VISIBLE);
-        mTextMonthDay.setText(calendar.getMonth() + "月" + calendar.getDay() + "日");
-        mTextYear.setText(String.valueOf(calendar.getYear()));
-        mTextLunar.setText(calendar.getLunar());
-        mYear = calendar.getYear();
+        rePlan(calendar);
         mTextSchedule.setText(calendar.getScheme());
     }
 
@@ -169,6 +165,11 @@ public class MainActivity extends BaseActivity implements
     @Override
     public void onMonthChange(int year, int month) {
         Calendar calendar = mCalendarView.getSelectedCalendar();
+        rePlan(calendar);
+    }
+
+    protected void rePlan(Calendar calendar)
+    {
         mTextLunar.setVisibility(View.VISIBLE);
         mTextYear.setVisibility(View.VISIBLE);
         mTextSchedule.setVisibility(View.VISIBLE);
@@ -176,6 +177,7 @@ public class MainActivity extends BaseActivity implements
         mTextYear.setText(String.valueOf(calendar.getYear()));
         mTextLunar.setText(calendar.getLunar());
         mYear = calendar.getYear();
+        mTextTest.setText(String.valueOf(getTestDateCount(calendar)));
     }
 
     @Override
@@ -189,9 +191,38 @@ public class MainActivity extends BaseActivity implements
         calendar.setYear(year);
         calendar.setMonth(month);
         calendar.setDay(day);
-        calendar.setSchemeColor(color);//如果单独标记颜色、则会使用这个颜色
+        calendar.setSchemeColor(color); //如果单独标记颜色、则会使用这个颜色
         calendar.setScheme(text);
+
         return calendar;
+    }
+
+    private int getTestDateCount(Calendar calendar) {
+        int year = calendar.getYear();
+        int month = calendar.getMonth();
+        int day = calendar.getDay();
+
+        String current = String.valueOf(year) +"-"+ String.valueOf(month + 1) +"-"+ String.valueOf(day);
+        Date currentDate = parseDate(current);
+        Date targetDate = parseDate(Test_DATE);
+
+        long d = (targetDate.getTime() - currentDate.getTime()) / 1000 / 3600 / 24;
+
+        return (int) d;
+
+    }
+
+    private Date parseDate(String strDate)
+    {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date outputDate = null;
+        try {
+            outputDate = formatter.parse(strDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return outputDate;
     }
 }
 
