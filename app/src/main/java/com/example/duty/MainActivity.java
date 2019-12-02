@@ -112,7 +112,6 @@ public class MainActivity extends BaseActivity implements
         // Test day
         Calendar calendar = mCalendarView.getSelectedCalendar();
         mTextTest.setText(String.valueOf(getTestDateCount(calendar)));
-        rePlan(calendar);
 
         // Listeners
         mCalendarView.setOnCalendarSelectListener(this);
